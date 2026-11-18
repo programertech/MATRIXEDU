@@ -250,12 +250,23 @@
 
   /* ---------- Mascote / assistant ---------- */
   #bit-launcher{
-    position:fixed; right:22px; bottom:22px; z-index:150; background:var(--paper); border:none; border-radius:999px;
-    width:64px; height:64px; box-shadow:0 8px 24px rgba(0,0,0,.4); cursor:pointer; display:flex; align-items:center; justify-content:center;
+    position:fixed; right:22px; bottom:22px; z-index:150; border:3px solid var(--amber); border-radius:999px;
+    width:72px; height:72px; cursor:pointer; display:flex; align-items:center; justify-content:center;
+    background:radial-gradient(circle at 30% 25%, #fff9e6 0%, var(--paper) 55%, #e9dfc2 100%);
+    box-shadow:0 10px 26px rgba(0,0,0,.45), 0 0 0 0 rgba(232,184,75,.55); transition:transform .2s;
+    animation:bitPulse 2.8s ease-out infinite;
   }
-  #bit-launcher:hover{transform:translateY(-2px);}
+  #bit-launcher:hover{transform:translateY(-3px) scale(1.06);}
+  #bit-launcher:focus-visible{outline:3px solid #fff; outline-offset:3px;}
+  #bit-launcher .bit-ico{filter:drop-shadow(0 2px 2px rgba(0,0,0,.25)); }
+      @keyframes bitPulse{0%{box-shadow:0 10px 26px rgba(0,0,0,.45),0 0 0 0 rgba(232,184,75,.55);} 70%,100%{box-shadow:0 10px 26px rgba(0,0,0,.45),0 0 0 16px rgba(232,184,75,0);}}
+  @keyframes bitBob{0%,100%{transform:translateY(0);} 50%{transform:translateY(-2px);}}
+  @keyframes bitBlink{0%,92%,100%{transform:scaleY(1);} 96%{transform:scaleY(.1);}}
+  @keyframes bitLed{0%,100%{opacity:1;} 50%{opacity:.35;}}
+  @media (prefers-reduced-motion:reduce){#bit-launcher,#bit-launcher .bit-ico,#bit-launcher .bit-eye,#bit-launcher .bit-led{animation:none;}}
+  body.reduce-motion #bit-launcher, body.reduce-motion #bit-launcher *{animation:none !important;}
   #bit-bubble{
-    position:fixed; right:22px; bottom:96px; z-index:150; background:var(--paper); color:var(--ink); padding:12px 16px; border-radius:12px 12px 2px 12px;
+    position:fixed; right:22px; bottom:106px; z-index:150; background:var(--paper); color:var(--ink); padding:12px 16px; border-radius:12px 12px 2px 12px;
     box-shadow:var(--shadow-paper); max-width:230px; font-size:.88rem; font-weight:600; transition:opacity .4s, transform .4s;
   }
   #bit-bubble[hidden]{display:none;}
@@ -728,6 +739,7 @@ body:has(#a11yPanel.open) div[vw]{opacity:0; pointer-events:none; transition:opa
 }
 body.reduce-motion .a11y-av, body.reduce-motion #speakBtn::after, body.reduce-motion .eq i{animation:none !important;}
 body.reduce-motion .a11y-panel .a11y-hero, body.reduce-motion .a11y-panel .a11y-meter, body.reduce-motion .a11y-panel .a11y-opt, body.reduce-motion .a11y-panel .speak-btn, body.reduce-motion .a11y-panel .a11y-note{opacity:1; animation:none !important;}
+nav.main-links a.active{background:var(--amber) !important; color:var(--ink) !important; opacity:1 !important; font-weight:700;}
 </style>
 </head>
 <body>
@@ -806,7 +818,7 @@ body.reduce-motion .a11y-panel .a11y-hero, body.reduce-motion .a11y-panel .a11y-
           <li><a href="#grade">Grade — Manhã (6º ao 9º ano) <span class="num">07h–14h</span></a></li>
           <li><a href="#grade">Grade — Tarde (1ª à 3ª série) <span class="num">14h–21h</span></a></li>
           <li><a href="#carrinhos">Carrinhos Lenovo · Positivo · Tablets <span class="num">86 un.</span></a></li>
-          <li><a href="#acessibilidade">Assistente de acessibilidade <span class="num">Bit</span></a></li>
+          <li><a href="#acessibilidade">Central de acessibilidade <span class="num">♿</span></a></li>
         </ul>
       </div>
     </div>
@@ -996,8 +1008,8 @@ body.reduce-motion .a11y-panel .a11y-hero, body.reduce-motion .a11y-panel .a11y-
             <path d="M82 58 q7 6 14 0" stroke="var(--ink)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
             <rect class="bit-pencil" x="150" y="120" width="6" height="46" rx="3" fill="#d9a441" transform="rotate(30 150 120)"/>
           </svg>
-          <p class="bit-name">Esse é o Bit</p>
-          <p class="bit-sub">seu assistente de acessibilidade</p>
+          <p class="bit-name">Central de acessibilidade</p>
+          <p class="bit-sub">ajuda para ler, ouvir e enxergar</p>
           <div class="bit-tip" id="bitTip" aria-live="polite">Dica: aperte Tab para pular de célula em célula na grade de horários.</div>
           <div class="bit-quick" role="group" aria-label="Experimente agora">
             <span class="bit-quick-label">Experimente agora</span>
@@ -1012,10 +1024,10 @@ body.reduce-motion .a11y-panel .a11y-hero, body.reduce-motion .a11y-panel .a11y-
       <div class="a11y-right">
         <p class="eyebrow">✨ Assistente de acessibilidade</p>
         <h2>Ajuda para navegar, ouvir e enxergar o site</h2>
-        <p>O Bit fica sempre disponível no canto da tela para quem precisa de apoio visual ou auditivo. Toque em cada recurso abaixo para entender como funciona e testar na hora.</p>
+        <p>O botão ♿ fica sempre disponível no canto da tela para quem precisa de apoio visual ou auditivo. Toque em cada recurso abaixo para entender como funciona e testar na hora.</p>
 
         <ol class="a11y-steps">
-          <li><strong>Abra o Bit</strong>Toque no botão redondo no canto direito da tela.</li>
+          <li><strong>Abra o botão ♿</strong>Toque no botão redondo no canto direito da tela.</li>
           <li><strong>Escolha o recurso</strong>Ligue o que ajudar: texto, contraste, voz ou Libras.</li>
           <li><strong>Pronto, fica salvo</strong>Sua escolha continua ligada neste navegador.</li>
         </ol>
@@ -1031,7 +1043,7 @@ body.reduce-motion .a11y-panel .a11y-hero, body.reduce-motion .a11y-panel .a11y-
               <div class="a11y-demo demo-font" aria-hidden="true"><span>Aa</span><span>Aa</span><span>Aa</span></div>
               <ul class="a11y-how">
                 <li><b>Para quem:</b> quem tem baixa visão ou lê a tela de longe, como no telão da sala.</li>
-                <li><b>Como usar:</b> abra o Bit e ligue “Aumentar texto”. Desligue quando quiser voltar ao tamanho normal.</li>
+                <li><b>Como usar:</b> abra o botão ♿ e ligue “Aumentar texto”. Desligue quando quiser voltar ao tamanho normal.</li>
               </ul>
               <button type="button" class="btn btn-primary btn-sm" data-a11y-act="font">Testar agora</button>
             </div></div>
@@ -1047,7 +1059,7 @@ body.reduce-motion .a11y-panel .a11y-hero, body.reduce-motion .a11y-panel .a11y-
               <div class="a11y-demo" aria-hidden="true"><div class="dc-box">Texto de exemplo</div></div>
               <ul class="a11y-how">
                 <li><b>Para quem:</b> quem enxerga melhor com preto, branco e amarelo, ou usa a tela sob muita luz.</li>
-                <li><b>Como usar:</b> abra o Bit e ligue “Alto contraste”. A mudança vale para todas as páginas.</li>
+                <li><b>Como usar:</b> abra o botão ♿ e ligue “Alto contraste”. A mudança vale para todas as páginas.</li>
               </ul>
               <button type="button" class="btn btn-primary btn-sm" data-a11y-act="contrast">Testar agora</button>
             </div></div>
@@ -1056,14 +1068,14 @@ body.reduce-motion .a11y-panel .a11y-hero, body.reduce-motion .a11y-panel .a11y-
           <div class="a11y-card" data-feature="voice">
             <button type="button" class="a11y-head" id="a11yh3" aria-expanded="false" aria-controls="a11yb3">
               <span class="ico" aria-hidden="true">▶</span>
-              <span class="a11y-title"><strong>Leitura em voz alta</strong><small>O Bit lê o conteúdo da página para usuários com deficiência visual.</small></span>
+              <span class="a11y-title"><strong>Leitura em voz alta</strong><small>O site lê o conteúdo da página para usuários com deficiência visual.</small></span>
               <span class="a11y-state"></span><span class="chev" aria-hidden="true">▾</span>
             </button>
             <div class="a11y-body" id="a11yb3" role="region" aria-labelledby="a11yh3"><div class="a11y-body-in">
               <div class="a11y-demo" id="voiceDemo" aria-hidden="true"><div class="vwave"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div>
               <ul class="a11y-how">
                 <li><b>Para quem:</b> quem tem deficiência visual ou prefere ouvir em vez de ler.</li>
-                <li><b>Como usar:</b> no Bit, toque em “Ouvir esta página” para ler tudo, ou ligue “Leitura ao passar o mouse” para ouvir só o item sob o cursor.</li>
+                <li><b>Como usar:</b> no painel ♿, toque em “Ouvir esta página” para ler tudo, ou ligue “Leitura ao passar o mouse” para ouvir só o item sob o cursor.</li>
               </ul>
               <button type="button" class="btn btn-primary btn-sm" data-a11y-act="speak">▶ Ouvir um exemplo</button>
             </div></div>
@@ -1103,7 +1115,7 @@ body.reduce-motion .a11y-panel .a11y-hero, body.reduce-motion .a11y-panel .a11y-
         </div>
 
         <div class="a11y-more">
-          <button type="button" class="btn btn-ghost btn-sm" data-a11y-act="panel">Abrir o painel do Bit</button>
+          <button type="button" class="btn btn-ghost btn-sm" data-a11y-act="panel">Abrir o painel de acessibilidade</button>
           <small>Atalho: aperte Esc para fechar o painel.</small>
         </div>
       </div>
@@ -1164,20 +1176,14 @@ body.reduce-motion .a11y-panel .a11y-hero, body.reduce-motion .a11y-panel .a11y-
 </footer>
 
 <!-- Mascote flutuante -->
-<div id="bit-bubble" hidden>Oi! Eu sou o Bit 👋 Clique aqui se precisar de ajuda para navegar no site.</div>
-<button id="bit-launcher" aria-haspopup="dialog" aria-controls="a11yPanel" aria-label="Abrir assistente de acessibilidade">
-  <svg width="34" height="34" viewBox="0 0 180 180" aria-hidden="true">
-    <g>
-      <rect x="34" y="34" width="34" height="34" rx="4" fill="var(--chalk-bg)"/>
-      <rect x="72" y="34" width="34" height="34" rx="4" fill="var(--amber)"/>
-      <rect x="110" y="34" width="34" height="34" rx="4" fill="var(--chalk-bg)"/>
-      <rect x="34" y="72" width="34" height="34" rx="4" fill="var(--amber)"/>
-      <rect x="72" y="72" width="34" height="34" rx="4" fill="var(--chalk-bg)"/>
-      <rect x="110" y="72" width="34" height="34" rx="4" fill="var(--amber)"/>
-      <rect x="34" y="110" width="34" height="34" rx="4" fill="var(--chalk-bg)"/>
-      <rect x="72" y="110" width="34" height="34" rx="4" fill="var(--chalk-bg)"/>
-      <rect x="110" y="110" width="34" height="34" rx="4" fill="var(--chalk-bg)"/>
-    </g>
+<div id="bit-bubble" hidden>♿ Precisa de ajuda para ler ou navegar? Clique aqui: texto maior, contraste, voz e Libras.</div>
+<button id="bit-launcher" aria-haspopup="dialog" aria-controls="a11yPanel" aria-label="Abrir central de acessibilidade" title="Acessibilidade: texto maior, contraste, voz e Libras">
+  <svg class="bit-ico" width="46" height="46" viewBox="0 0 48 48" aria-hidden="true">
+    <circle cx="24" cy="24" r="21" fill="var(--chalk-bg)"/>
+    <circle cx="24" cy="24" r="21" fill="none" stroke="var(--amber)" stroke-width="2"/>
+    <circle cx="24" cy="11.5" r="3.4" fill="var(--amber)"/>
+    <path d="M12 18.5 L24 20.5 L36 18.5" fill="none" stroke="var(--amber)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M24 20.5 V28.5 M24 28.5 L18.5 38 M24 28.5 L29.5 38" fill="none" stroke="var(--amber)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
   </svg>
 </button>
 
@@ -1185,9 +1191,9 @@ body.reduce-motion .a11y-panel .a11y-hero, body.reduce-motion .a11y-panel .a11y-
 <aside class="a11y-panel" id="a11yPanel" role="dialog" aria-modal="true" aria-labelledby="a11yTitle">
   <button class="close-x" id="closeA11y" aria-label="Fechar painel de acessibilidade">✕</button>
   <div class="a11y-hero">
-    <span class="a11y-av" aria-hidden="true">✏️</span>
+    <span class="a11y-av" aria-hidden="true">♿</span>
     <div><h3 id="a11yTitle">Central de acessibilidade</h3>
-    <p class="a11y-hi">Oi, eu sou o Bit! Ative o que ajudar você a usar o MatrixEdu com mais conforto.</p></div>
+    <p class="a11y-hi">Ative o que ajudar você a usar o MatrixEdu com mais conforto.</p></div>
   </div>
   <div class="a11y-meter" aria-live="polite">
     <div class="a11y-meter-top"><span id="a11yCount">0 de 4 recursos ativos</span><button type="button" class="a11y-reset" id="a11yReset">Limpar tudo</button></div>
@@ -1210,7 +1216,7 @@ body.reduce-motion .a11y-panel .a11y-hero, body.reduce-motion .a11y-panel .a11y-
   </label>
   <label class="a11y-opt" style="--i:3">
     <span class="a11y-ico" aria-hidden="true">🔊</span>
-    <span class="a11y-txt"><span class="lbl">Leitura ao passar o mouse</span><span class="desc">Com a leitura ativa, o Bit lê em voz alta o texto por onde o cursor passa.</span></span>
+    <span class="a11y-txt"><span class="lbl">Leitura ao passar o mouse</span><span class="desc">Com a leitura ativa, o site lê em voz alta o texto por onde o cursor passa.</span></span>
     <span class="switch"><input type="checkbox" id="toggleHoverRead"><span class="slider-tg"></span></span>
   </label>
 
@@ -1305,7 +1311,6 @@ body.reduce-motion .a11y-panel .a11y-hero, body.reduce-motion .a11y-panel .a11y-
 </svg>
 <div class="overlay-bg" id="authOverlay"><div class="chalk-layer" id="chalkLayer" aria-hidden="true"></div></div>
 <aside class="login-modal" id="loginModal" role="dialog" aria-modal="true" aria-labelledby="loginTitle" hidden>
-  <button class="close-x" id="closeLogin" aria-label="Fechar login">✕</button>
   <div class="login-brand">Matrix<span>Edu</span><small>Grade de horários &amp; gestão escolar</small></div>
   <div class="school-scene" aria-hidden="true">
     <svg class="toon t1"><use href="#toon-pencil"/></svg>
@@ -2021,34 +2026,24 @@ body.reduce-motion .a11y-panel .a11y-hero, body.reduce-motion .a11y-panel .a11y-
   /* ---------- Login e área de administração (licenças) ---------- */
   var USERS_KEY = 'matrixedu_users_v2';
   var SESSION_KEY = 'matrixedu_session_v1';
-  /* MODO TESTE: sem administrador. Professores entram direto (sem aprovação de licença) e a Central de licenças fica oculta.
-     Para voltar ao modo normal com administrador, troque para false. */
-  var MODO_TESTE = true;
+  /* MODO TESTE: professores entram direto (sem aprovação de licença). O administrador sempre existe e vê a Central de licenças.
+     Para exigir aprovação de licença dos professores, troque para false. */
+  var MODO_TESTE = true;  /* true = professores entram sem aprovação; o ADMIN existe nos dois modos */
   var ADMIN_EMAIL = 'mariahildaornelasdeoliveira@gmail.com';
   var users = null;
   try{ users = JSON.parse(localStorage.getItem(USERS_KEY)); }catch(e){ users = null; }
-  if(!users){
-    users = {};
-    if(!MODO_TESTE){
-      users[ADMIN_EMAIL] = {nome:'Maria Hilda Ornelas de Oliveira', senha:'MATRIXEDU@2026', role:'admin', licenca:'liberada'};
-    }
-    localStorage.setItem(USERS_KEY, JSON.stringify(users));
-  }
-  function saveUsers(){ localStorage.setItem(USERS_KEY, JSON.stringify(users)); }
+  if(!users){ users = {}; }
+  /* Conta do administrador: sempre existe e sempre volta a ser admin, mesmo com dados antigos salvos no navegador */
+  var ADMIN_NOME = 'Maria Hilda Ornelas de Oliveira';
+  var ADMIN_SENHA = 'MATRIXEDU@2026';
+  users[ADMIN_EMAIL] = {nome:ADMIN_NOME, senha:ADMIN_SENHA, role:'admin', licenca:'liberada'};
   if(MODO_TESTE){
-    /* Remove qualquer conta de administrador e libera todos os professores já cadastrados */
+    /* Modo teste: professores já cadastrados são liberados automaticamente (o administrador continua existindo) */
     Object.keys(users).forEach(function(k){
-      if(users[k].role === 'admin'){ delete users[k]; }
-      else if(users[k].role === 'professor'){ users[k].licenca = 'liberada'; }
+      if(users[k].role === 'professor'){ users[k].licenca = 'liberada'; }
     });
-    saveUsers();
-  } else {
-    /* Garante que a conta da administradora sempre exista como admin, mesmo se o navegador já tinha dados antigos salvos */
-    if(!users[ADMIN_EMAIL] || users[ADMIN_EMAIL].role !== 'admin'){
-      users[ADMIN_EMAIL] = {nome:'Maria Hilda Ornelas de Oliveira', senha:'MATRIXEDU@2026', role:'admin', licenca:'liberada'};
-      saveUsers();
-    }
   }
+  saveUsers();
   if(users['admin@matrixedu.com']){ delete users['admin@matrixedu.com']; saveUsers(); }
 
   var session = null;
@@ -2058,7 +2053,6 @@ body.reduce-motion .a11y-panel .a11y-hero, body.reduce-motion .a11y-panel .a11y-
   var authBtn = document.getElementById('authBtn');
   var authOverlay = document.getElementById('authOverlay');
   var loginModal = document.getElementById('loginModal');
-  var closeLogin = document.getElementById('closeLogin');
   var loginForm = document.getElementById('loginForm');
   var signupForm = document.getElementById('signupForm');
   var loginMsg = document.getElementById('loginMsg');
@@ -2259,10 +2253,9 @@ body.reduce-motion .a11y-panel .a11y-hero, body.reduce-motion .a11y-panel .a11y-
     loginModal.hidden = true;
     authOverlay.classList.remove('show');
   }
-  authOverlay.addEventListener('click', closeLoginModal);
-  closeLogin.addEventListener('click', closeLoginModal);
+  /* Login obrigatório: sem botão X, sem fechar clicando fora e sem Esc. A tela só some depois de entrar. */
   document.addEventListener('keydown', function(e){
-    if(e.key === 'Escape' && !loginModal.hidden) closeLoginModal();
+    if(e.key === 'Escape' && !loginModal.hidden && !session) e.preventDefault();
   });
 
   authBtn.addEventListener('click', function(){
@@ -2271,6 +2264,7 @@ body.reduce-motion .a11y-panel .a11y-hero, body.reduce-motion .a11y-panel .a11y-
       session = null;
       localStorage.removeItem(SESSION_KEY);
       updateAuthUI();
+      openLogin();
     } else {
       openLogin();
     }
@@ -2375,7 +2369,7 @@ body.reduce-motion .a11y-panel .a11y-hero, body.reduce-motion .a11y-panel .a11y-
     updateAuthUI();
   });
 
-  if(MODO_TESTE){ document.getElementById('signupNote').textContent = '🧪 Modo teste: professores e alunos entram direto após criar a conta, sem aprovação.'; }
+  if(MODO_TESTE){ document.getElementById('signupNote').textContent = '🧪 Modo teste: professores e alunos entram direto após criar a conta. O acesso de administrador é só para a gestão.'; }
 
   /* Captcha simples: soma de dois números pequenos (1 a 5) */
   var capA = 0, capB = 0;
@@ -2722,7 +2716,7 @@ body.reduce-motion .a11y-panel .a11y-hero, body.reduce-motion .a11y-panel .a11y-
   var speakBtn = document.getElementById('speakBtn');
   var stopSpeakBtn = document.getElementById('stopSpeakBtn');
   var synth = window.speechSynthesis;
-  var speechText = 'Bem-vindo ao MatrixEdu. Este site organiza a grade de horários das salas do sexto ao nono ano no período da manhã, das sete às quatorze horas, e da primeira à terceira série no período da tarde, das quatorze às vinte e uma horas. Você também pode registrar a retirada e a devolução dos carrinhos de notebooks Lenovo, Positivo e dos tablets. Use o botão do Bit, no canto da tela, sempre que precisar de ajuda.';
+  var speechText = 'Bem-vindo ao MatrixEdu. Este site organiza a grade de horários das salas do sexto ao nono ano no período da manhã, das sete às quatorze horas, e da primeira à terceira série no período da tarde, das quatorze às vinte e uma horas. Você também pode registrar a retirada e a devolução dos carrinhos de notebooks Lenovo, Positivo e dos tablets. Use o botão ♿ de acessibilidade, no canto da tela, sempre que precisar de ajuda.';
   if(synth){
     speakBtn.addEventListener('click', function(){
       synth.cancel();
@@ -2862,7 +2856,7 @@ body.reduce-motion .a11y-panel .a11y-hero, body.reduce-motion .a11y-panel .a11y-
       var vd = document.getElementById('voiceDemo');
       if(synth){
         synth.cancel();
-        var u = new SpeechSynthesisUtterance('Oi! Eu sou o Bit. Eu leio o conteúdo do MatrixEdu em voz alta para você.');
+        var u = new SpeechSynthesisUtterance('Eu leio o conteúdo do MatrixEdu em voz alta para você.');
         u.lang = 'pt-BR';
         u.onend = function(){ if(vd) vd.classList.remove('on'); };
         synth.speak(u);
@@ -2879,7 +2873,7 @@ body.reduce-motion .a11y-panel .a11y-hero, body.reduce-motion .a11y-panel .a11y-
     'Quer letras maiores? Toque em A+ e o site inteiro cresce.',
     'Selecione um texto e o boneco de Libras traduz para sinais.',
     'Toda retirada de carrinho mostra um carimbo na tela, sem depender de som.',
-    'Aperte Esc para fechar o painel do Bit a qualquer momento.'
+    'Aperte Esc para fechar o painel de acessibilidade a qualquer momento.'
   ];
   var bitTipEl = document.getElementById('bitTip'), bitTipI = 0;
   setInterval(function(){
