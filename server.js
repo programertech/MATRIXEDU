@@ -1,89 +1,102 @@
-// Servidor do MatrixEdu — sem dependências. Rode com: node server.js
-// Compartilha entre todos os computadores: contas, grade, carrinhos, registros e alunos logados.
+/* MatrixEdu · servidor da escola
+   Uso:  node server.js        (ou dê dois cliques em iniciar.bat no Windows)
+   Sem instalar nada além do Node.js. Os dados ficam no arquivo dados.json, na mesma pasta. */
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
+const os = require('os');
 
 const PORT = process.env.PORT || 3000;
-const DATA_FILE = process.env.DATA_FILE || path.join(__dirname, 'data.json');
-const ONLINE_MS = 20000; // aluno conta como logado se deu sinal nos últimos 20s
+const DIR = __dirname;
+const DATA_FILE = path.join(DIR, 'dados.json');
+const ONLINE_MS = 20000;               // aluno some da lista se ficar 20 s sem sinal
+const USERS_KEY = 'matrixedu_users_v2';
 
-const SHARED = ['matrixedu_users_v2','matrixedu_grade_v1','matrixedu_carts_v1','matrixedu_log_v1',
-  'matrixedu_attendance_v1','matrixedu_activity_log_v1','matrixedu_access_log_v1','matrixedu_stucfg_v1'];
-
-// Para zerar tudo (contas, grade, registros): troque o valor de RESET_ID (variável de ambiente no Render) e reinicie.
-const RESET_ID = process.env.RESET_ID || '2026-11-18-reset';
-
-let db = { keys: {}, students: {}, resetId: RESET_ID };
+let db = { keys: {}, overrides: {} };   // keys = dados compartilhados; overrides = bloqueio/liberação manual por aluno
 try { db = Object.assign(db, JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'))); } catch (e) {}
-if (db.resetId !== RESET_ID) {
-  db = { keys: {}, students: {}, resetId: RESET_ID };
-  try { fs.mkdirSync(path.dirname(DATA_FILE), { recursive: true }); fs.writeFileSync(DATA_FILE, JSON.stringify(db)); } catch (e) {}
-}
+const students = {};                    // presença em memória: email -> {nome, last, online}
 
 let saveTimer = null;
 function save() {
   clearTimeout(saveTimer);
   saveTimer = setTimeout(() => {
-    try { fs.mkdirSync(path.dirname(DATA_FILE), { recursive: true }); fs.writeFileSync(DATA_FILE, JSON.stringify(db)); } catch (e) { console.error('Erro ao salvar:', e.message); }
-  }, 500);
+    fs.writeFile(DATA_FILE + '.tmp', JSON.stringify(db), err => {
+      if (!err) fs.rename(DATA_FILE + '.tmp', DATA_FILE, () => {});
+    });
+  }, 300);
 }
 
 function studentsView() {
   const now = Date.now(), out = {};
-  Object.keys(db.students).forEach(k => {
-    const s = db.students[k];
-    out[k] = Object.assign({}, s, { on: !!s.online && (now - (s.last || 0)) < ONLINE_MS });
+  Object.keys(students).forEach(email => {
+    const s = students[email];
+    out[email] = { nome: s.nome, on: !!s.online && (now - s.last) < ONLINE_MS };
+  });
+  Object.keys(db.overrides).forEach(email => {
+    if (!out[email]) out[email] = { nome: (students[email] && students[email].nome) || '', on: false };
+    out[email].override = db.overrides[email];
   });
   return out;
 }
 
-function readBody(req) {
-  return new Promise(resolve => {
-    let b = '';
-    req.on('data', c => { b += c; if (b.length > 5e6) req.destroy(); });
-    req.on('end', () => { try { resolve(JSON.parse(b || '{}')); } catch (e) { resolve({}); } });
-    req.on('error', () => resolve({}));
-  });
+function send(res, code, body, type) {
+  res.writeHead(code, { 'Content-Type': type || 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
+  res.end(typeof body === 'string' ? body : JSON.stringify(body));
 }
 
-function json(res, code, obj) {
-  res.writeHead(code, { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' });
-  res.end(JSON.stringify(obj));
+function readBody(req, cb) {
+  let raw = '';
+  req.on('data', c => { raw += c; if (raw.length > 20e6) req.destroy(); });
+  req.on('end', () => { let j = {}; try { j = JSON.parse(raw || '{}'); } catch (e) {} cb(j); });
 }
 
-http.createServer(async (req, res) => {
+const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.css': 'text/css', '.png': 'image/png', '.jpg': 'image/jpeg', '.svg': 'image/svg+xml', '.ico': 'image/x-icon' };
+
+http.createServer((req, res) => {
   const url = req.url.split('?')[0];
 
-  if (req.method === 'GET' && url === '/api/state') return json(res, 200, { keys: db.keys, students: studentsView(), resetId: db.resetId });
+  if (req.method === 'GET' && url === '/api/state') return send(res, 200, { keys: db.keys, students: studentsView() });
 
   if (req.method === 'POST' && url.startsWith('/api/')) {
-    const b = await readBody(req);
-    if (url === '/api/set') {
-      if (SHARED.includes(b.key) && typeof b.value === 'string') { db.keys[b.key] = b.value; save(); }
-    } else if (url === '/api/beat') {
-      if (b.email) {
-        const s = db.students[b.email] || {};
-        db.students[b.email] = Object.assign(s, { nome: b.nome || s.nome || '', last: Date.now(), online: true });
+    return readBody(req, b => {
+      if (url === '/api/set' && typeof b.key === 'string' && typeof b.value === 'string') {
+        if (b.key === USERS_KEY) {            // contas: junta com as que já existem, assim ninguém apaga a conta do outro
+          try {
+            const atual = JSON.parse(db.keys[USERS_KEY] || '{}'), novo = JSON.parse(b.value);
+            b.value = JSON.stringify(Object.assign({}, atual, novo));
+          } catch (e) {}
+        }
+        db.keys[b.key] = b.value; save();
+      } else if (url === '/api/beat' && b.email) {
+        students[b.email] = { nome: b.nome || (students[b.email] && students[b.email].nome) || '', last: Date.now(), online: true };
+      } else if (url === '/api/offline' && b.email) {
+        if (students[b.email]) students[b.email].online = false;
+      } else if (url === '/api/override' && b.email) {
+        if (b.v === 'auto') delete db.overrides[b.email]; else if (b.v === 'on' || b.v === 'off') db.overrides[b.email] = b.v;
         save();
       }
-    } else if (url === '/api/override') {
-      const s = db.students[b.email];
-      if (s) { if (b.v === 'auto') delete s.override; else if (b.v === 'on' || b.v === 'off') s.override = b.v; save(); }
-    } else if (url === '/api/offline') {
-      const s = db.students[b.email];
-      if (s) { s.online = false; save(); }
-    }
-    return json(res, 200, { ok: true });
-  }
-
-  if (req.method === 'GET' && (url === '/' || url === '/index.html')) {
-    return fs.readFile(path.join(__dirname, 'index.html'), (err, data) => {
-      if (err) { res.writeHead(404); return res.end('index.html não encontrado'); }
-      res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-cache' });
-      res.end(data);
+      send(res, 200, { ok: true });
     });
   }
 
-  res.writeHead(404); res.end('Não encontrado');
-}).listen(PORT, () => console.log('MatrixEdu rodando na porta ' + PORT));
+  if (req.method === 'GET') {                 // arquivos do site (index.html etc.)
+    let rel = decodeURIComponent(url === '/' ? '/index.html' : url);
+    const file = path.normalize(path.join(DIR, rel));
+    const base = path.basename(file);
+    if (!file.startsWith(DIR) || base === 'dados.json' || base === 'server.js') return send(res, 404, 'Não encontrado', 'text/plain; charset=utf-8');
+    return fs.readFile(file, (err, buf) => {
+      if (err) return send(res, 404, 'Não encontrado', 'text/plain; charset=utf-8');
+      res.writeHead(200, { 'Content-Type': MIME[path.extname(file)] || 'application/octet-stream', 'Cache-Control': 'no-store' });
+      res.end(buf);
+    });
+  }
+  send(res, 405, 'Método não permitido', 'text/plain; charset=utf-8');
+}).listen(PORT, '0.0.0.0', () => {
+  console.log('\n  MatrixEdu rodando!\n');
+  console.log('  Neste computador:  http://localhost:' + PORT);
+  const nets = os.networkInterfaces();
+  Object.keys(nets).forEach(n => nets[n].forEach(i => {
+    if (i.family === 'IPv4' && !i.internal) console.log('  Nos outros computadores da escola:  http://' + i.address + ':' + PORT);
+  }));
+  console.log('\n  Deixe esta janela aberta. Para parar: Ctrl + C\n');
+});
