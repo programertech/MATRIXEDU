@@ -671,6 +671,63 @@ body.reduce-motion .reveal{opacity:1; transform:none;}
 .cart-hint{color:#c9c3ae;}
 .bell-actions .btn-ghost{color:var(--ink); border-color:var(--paper-line);}
 .bell-actions .btn-ghost:hover{background:#fff6e0; color:var(--ink); border-color:var(--amber-deep);}
+
+/* ===== Central de acessibilidade: visual dinâmico e animado ===== */
+.overlay-bg{backdrop-filter:blur(3px);}
+.a11y-panel{background:radial-gradient(120% 60% at 100% 0%,#24503f 0%,rgba(36,80,63,0) 60%),linear-gradient(180deg,#1c3d33,#12281f); border-left:3px solid var(--amber); padding:26px 20px 30px; transition:transform .55s cubic-bezier(.2,1,.3,1);}
+.a11y-panel .close-x{width:36px; height:36px; border-radius:50%; display:grid; place-items:center; font-size:1.05rem; transition:transform .35s cubic-bezier(.2,1.6,.4,1), background .2s;}
+.a11y-panel .close-x:hover{background:rgba(232,184,75,.22); transform:rotate(90deg) scale(1.1);}
+.a11y-hero{display:flex; gap:14px; align-items:center; padding-right:34px; margin-bottom:6px;}
+.a11y-av{width:52px; height:52px; min-width:52px; border-radius:16px; background:var(--amber); display:grid; place-items:center; font-size:1.6rem; box-shadow:0 6px 18px rgba(232,184,75,.35); animation:avFloat 3s ease-in-out infinite;}
+@keyframes avFloat{0%,100%{transform:translateY(0) rotate(-6deg);} 50%{transform:translateY(-5px) rotate(6deg);}}
+.a11y-hi{margin:4px 0 0; font-size:.85rem; line-height:1.4; color:#c9c3ae;}
+.a11y-meter{margin:16px 0 4px;}
+.a11y-meter-top{display:flex; justify-content:space-between; align-items:center; font-family:var(--font-mono); font-size:.74rem; color:var(--sky); letter-spacing:.02em;}
+.a11y-reset{all:unset; cursor:pointer; font-family:var(--font-mono); font-size:.72rem; color:var(--amber); border-bottom:1px dashed var(--amber); opacity:0; pointer-events:none; transition:opacity .25s;}
+.a11y-meter.has-on .a11y-reset{opacity:1; pointer-events:auto;}
+.a11y-reset:focus-visible{outline:2px solid var(--sky); outline-offset:3px;}
+.a11y-bar{height:7px; margin-top:8px; border-radius:99px; background:rgba(244,241,230,.12); overflow:hidden;}
+.a11y-bar i{display:block; height:100%; width:0; border-radius:99px; background:linear-gradient(90deg,var(--green-check),var(--amber)); transition:width .5s cubic-bezier(.2,1.2,.3,1);}
+.a11y-opt{display:flex; align-items:center; gap:12px; padding:12px 14px; margin-top:10px; border-radius:16px; cursor:pointer; background:rgba(255,255,255,.045); border:1.5px solid rgba(244,241,230,.13); transition:transform .25s, border-color .25s, background .25s, box-shadow .3s;}
+.a11y-opt:hover{transform:translateY(-2px); border-color:rgba(232,184,75,.6);}
+.a11y-opt:active{transform:scale(.985);}
+.a11y-opt:has(input:checked){border-color:var(--amber); background:rgba(232,184,75,.11); box-shadow:0 0 0 1px rgba(232,184,75,.25), 0 10px 24px rgba(0,0,0,.3);}
+.a11y-opt:has(input:focus-visible){outline:3px solid var(--sky); outline-offset:2px;}
+.a11y-ico{width:44px; height:44px; min-width:44px; border-radius:13px; display:grid; place-items:center; font-size:1.3rem; background:rgba(147,195,216,.17); transition:transform .35s cubic-bezier(.2,1.6,.4,1), background .25s;}
+.a11y-ico .aa{font-family:var(--font-display); font-size:1.35rem; color:var(--chalk-white); transition:font-size .3s;}
+.a11y-opt:hover .a11y-ico{transform:rotate(-8deg) scale(1.1);}
+.a11y-opt:has(input:checked) .a11y-ico{background:var(--amber); animation:icoPop .5s cubic-bezier(.2,1.6,.4,1);}
+.a11y-opt:has(input:checked) .a11y-ico .aa{color:var(--ink); font-size:1.65rem;}
+@keyframes icoPop{0%{transform:scale(.6) rotate(-16deg);} 100%{transform:none;}}
+.a11y-txt{flex:1; min-width:0; display:block;}
+.a11y-txt .lbl{display:block; font-weight:700; font-size:.95rem;}
+.a11y-txt .desc{display:block; max-width:none; font-size:.78rem; line-height:1.35; color:#b9c9c2; margin-top:2px;}
+.a11y-opt .switch{width:54px; height:30px;}
+.a11y-opt .slider-tg{background:#3f5249; transition:background .3s, box-shadow .3s;}
+.a11y-opt .slider-tg::before{content:'✕'; display:flex; align-items:center; justify-content:center; width:24px; height:24px; left:3px; top:3px; font-size:.7rem; font-weight:700; color:#56685f; line-height:1; transition:transform .4s cubic-bezier(.2,1.6,.4,1), color .2s;}
+.a11y-opt input:checked + .slider-tg{background:var(--amber); box-shadow:0 0 14px rgba(232,184,75,.55);}
+.a11y-opt input:checked + .slider-tg::before{content:'✓'; color:#1e2a24; transform:translateX(24px);}
+.a11y-panel .speak-btn{position:relative; overflow:hidden; border-radius:14px; padding:14px 16px; font-weight:700; margin-top:18px; transition:transform .2s, box-shadow .25s;}
+.a11y-panel .speak-btn:hover{transform:translateY(-2px); box-shadow:0 10px 22px rgba(0,0,0,.35);}
+#speakBtn::after{content:''; position:absolute; top:0; left:-60%; width:40%; height:100%; background:linear-gradient(100deg,transparent,rgba(255,255,255,.55),transparent); transform:skewX(-20deg); animation:shine 3.6s ease-in-out infinite;}
+@keyframes shine{0%,55%{left:-60%;} 100%{left:130%;}}
+.eq{display:inline-flex; align-items:flex-end; gap:3px; height:16px; margin-right:6px; vertical-align:middle;}
+.eq i{display:block; width:4px; height:100%; border-radius:2px; background:var(--amber); transform-origin:bottom; animation:eqBar .9s ease-in-out infinite;}
+.eq i:nth-child(2){animation-delay:.15s;} .eq i:nth-child(3){animation-delay:.3s;} .eq i:nth-child(4){animation-delay:.45s;}
+@keyframes eqBar{0%,100%{transform:scaleY(.25);} 50%{transform:scaleY(1);}}
+.a11y-note{border-left:3px solid var(--sky); border-radius:12px;}
+.a11y-panel .a11y-hero, .a11y-panel .a11y-meter, .a11y-panel .a11y-opt, .a11y-panel .speak-btn, .a11y-panel .a11y-note{opacity:0;}
+.a11y-panel.open .a11y-hero, .a11y-panel.open .a11y-meter, .a11y-panel.open .a11y-opt, .a11y-panel.open .speak-btn, .a11y-panel.open .a11y-note{animation:optIn .55s cubic-bezier(.2,1.2,.3,1) both; animation-delay:calc(.12s + var(--i,0) * .08s);}
+@keyframes optIn{from{opacity:0; transform:translateX(28px);} to{opacity:1; transform:none;}}
+/* boneco de Libras: nunca por cima do painel e sempre no canto esquerdo */
+div[vw] div[vw-access-button]{left:22px !important; right:auto !important; top:auto !important; bottom:22px !important;}
+body:has(#a11yPanel.open) div[vw]{opacity:0; pointer-events:none; transition:opacity .2s;}
+@media (prefers-reduced-motion:reduce){
+  .a11y-av,#speakBtn::after,.eq i{animation:none !important;}
+  .a11y-panel .a11y-hero,.a11y-panel .a11y-meter,.a11y-panel .a11y-opt,.a11y-panel .speak-btn,.a11y-panel .a11y-note{opacity:1; animation:none !important;}
+}
+body.reduce-motion .a11y-av, body.reduce-motion #speakBtn::after, body.reduce-motion .eq i{animation:none !important;}
+body.reduce-motion .a11y-panel .a11y-hero, body.reduce-motion .a11y-panel .a11y-meter, body.reduce-motion .a11y-panel .a11y-opt, body.reduce-motion .a11y-panel .speak-btn, body.reduce-motion .a11y-panel .a11y-note{opacity:1; animation:none !important;}
 </style>
 </head>
 <body>
@@ -1127,32 +1184,60 @@ body.reduce-motion .reveal{opacity:1; transform:none;}
 <div class="overlay-bg" id="overlayBg"></div>
 <aside class="a11y-panel" id="a11yPanel" role="dialog" aria-modal="true" aria-labelledby="a11yTitle">
   <button class="close-x" id="closeA11y" aria-label="Fechar painel de acessibilidade">✕</button>
-  <h3 id="a11yTitle">Central de acessibilidade</h3>
-  <p style="font-size:.88rem; color:#c9c3ae;">Oi, eu sou o Bit! Ative o que ajudar você a usar o MatrixEdu com mais conforto.</p>
-
-  <div class="a11y-row">
-    <div><div class="lbl">Aumentar texto</div><div class="desc">Deixa as letras de todo o site maiores.</div></div>
-    <label class="switch"><input type="checkbox" id="toggleFont"><span class="slider-tg"></span></label>
+  <div class="a11y-hero">
+    <span class="a11y-av" aria-hidden="true">✏️</span>
+    <div><h3 id="a11yTitle">Central de acessibilidade</h3>
+    <p class="a11y-hi">Oi, eu sou o Bit! Ative o que ajudar você a usar o MatrixEdu com mais conforto.</p></div>
   </div>
-  <div class="a11y-row">
-    <div><div class="lbl">Alto contraste</div><div class="desc">Preto, branco e amarelo para leitura mais nítida.</div></div>
-    <label class="switch"><input type="checkbox" id="toggleContrast"><span class="slider-tg"></span></label>
+  <div class="a11y-meter" aria-live="polite">
+    <div class="a11y-meter-top"><span id="a11yCount">0 de 4 recursos ativos</span><button type="button" class="a11y-reset" id="a11yReset">Limpar tudo</button></div>
+    <div class="a11y-bar"><i id="a11yFill"></i></div>
   </div>
-  <div class="a11y-row">
-    <div><div class="lbl">Reduzir animações</div><div class="desc">Remove o efeito do carimbo e outras transições.</div></div>
-    <label class="switch"><input type="checkbox" id="toggleMotion"><span class="slider-tg"></span></label>
-  </div>
-  <div class="a11y-row">
-    <div><div class="lbl">Leitura ao passar o mouse</div><div class="desc">Com a leitura ativa, o Bit lê em voz alta o texto por onde o cursor passa.</div></div>
-    <label class="switch"><input type="checkbox" id="toggleHoverRead"><span class="slider-tg"></span></label>
-  </div>
+  <label class="a11y-opt" style="--i:0">
+    <span class="a11y-ico" aria-hidden="true"><b class="aa">Aa</b></span>
+    <span class="a11y-txt"><span class="lbl">Aumentar texto</span><span class="desc">Deixa as letras de todo o site maiores.</span></span>
+    <span class="switch"><input type="checkbox" id="toggleFont"><span class="slider-tg"></span></span>
+  </label>
+  <label class="a11y-opt" style="--i:1">
+    <span class="a11y-ico" aria-hidden="true">🌗</span>
+    <span class="a11y-txt"><span class="lbl">Alto contraste</span><span class="desc">Preto, branco e amarelo para leitura mais nítida.</span></span>
+    <span class="switch"><input type="checkbox" id="toggleContrast"><span class="slider-tg"></span></span>
+  </label>
+  <label class="a11y-opt" style="--i:2">
+    <span class="a11y-ico" aria-hidden="true">🎞️</span>
+    <span class="a11y-txt"><span class="lbl">Reduzir animações</span><span class="desc">Remove o efeito do carimbo e outras transições.</span></span>
+    <span class="switch"><input type="checkbox" id="toggleMotion"><span class="slider-tg"></span></span>
+  </label>
+  <label class="a11y-opt" style="--i:3">
+    <span class="a11y-ico" aria-hidden="true">🔊</span>
+    <span class="a11y-txt"><span class="lbl">Leitura ao passar o mouse</span><span class="desc">Com a leitura ativa, o Bit lê em voz alta o texto por onde o cursor passa.</span></span>
+    <span class="switch"><input type="checkbox" id="toggleHoverRead"><span class="slider-tg"></span></span>
+  </label>
 
   <button class="btn btn-primary speak-btn" id="speakBtn">▶ Ouvir esta página</button>
-  <button class="btn btn-ghost speak-btn" id="stopSpeakBtn" style="display:none;">■ Parar leitura</button>
+  <button class="btn btn-ghost speak-btn" id="stopSpeakBtn" style="display:none;"><span class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span> ■ Parar leitura</button>
 
-  <p class="a11y-note">Feito para deficiência visual e auditiva: leitura em voz alta, leitura ao passar o mouse e o boneco de Libras ajudam quem enxerga ou ouve menos; carimbos e confirmações sempre escritas na tela garantem que quem não ouve o "clique" também veja que a ação funcionou.</p>
+  <p class="a11y-note" style="--i:4">Feito para deficiência visual e auditiva: leitura em voz alta, leitura ao passar o mouse e o boneco de Libras ajudam quem enxerga ou ouve menos; carimbos e confirmações sempre escritas na tela garantem que quem não ouve o "clique" também veja que a ação funcionou.</p>
 </aside>
 
+<script>
+(function(){
+  var panel=document.getElementById('a11yPanel'); if(!panel) return;
+  var ids=['toggleFont','toggleContrast','toggleMotion','toggleHoverRead'];
+  var cnt=document.getElementById('a11yCount'), fill=document.getElementById('a11yFill'), meter=cnt.closest('.a11y-meter');
+  function upd(){
+    var n=ids.filter(function(i){ var e=document.getElementById(i); return e && e.checked; }).length;
+    cnt.textContent = n===0 ? 'Nenhum recurso ativo' : (n+' de '+ids.length+(n===1?' recurso ativo':' recursos ativos'));
+    fill.style.width=(n/ids.length*100)+'%'; meter.classList.toggle('has-on', n>0);
+  }
+  panel.addEventListener('change',upd);
+  new MutationObserver(upd).observe(panel,{attributes:true,attributeFilter:['class']});
+  document.getElementById('a11yReset').addEventListener('click',function(){
+    ids.forEach(function(i){ var e=document.getElementById(i); if(e && e.checked){ e.checked=false; e.dispatchEvent(new Event('change',{bubbles:true})); } });
+  });
+  upd(); setTimeout(upd,500);
+})();
+</script>
 <div class="lock-overlay" id="lockOverlay" role="alertdialog" aria-live="assertive" aria-labelledby="loTitle" hidden>
   <div class="lock-box">
     <div class="lock-ico" aria-hidden="true">🔒</div>
