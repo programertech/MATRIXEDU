@@ -95,6 +95,23 @@ function keysPublicas() {
   if (mudou) { db.keys[USERS_KEY] = JSON.stringify(us); save(); }
 })();
 const tentativas = {}; // trava o login após 5 erros por 15 min
+const sessoes = {}; // token -> {email, ate} — sessão em memória, válida por 12h
+const SESSAO_MS = 12 * 60 * 60 * 1000;
+function criarSessao(email) {
+  const token = crypto.randomBytes(24).toString('hex');
+  sessoes[token] = { email, ate: Date.now() + SESSAO_MS };
+  return token;
+}
+function viewerDoPedido(req) {
+  const auth = req.headers['authorization'] || '';
+  const m = /^Bearer\s+(.+)$/.exec(auth);
+  if (!m) return null;
+  const s = sessoes[m[1]];
+  if (!s || s.ate < Date.now()) { delete sessoes[m[1]]; return null; }
+  const u = lerUsers()[s.email];
+  if (!u) return null;
+  return { email: s.email, nome: u.nome, role: u.role };
+}
 
 function studentsView() {
   const now = Date.now(), out = {};
@@ -130,7 +147,7 @@ const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.
 
 http.createServer((req, res) => {
   const url = req.url.split('?')[0];
-  if (req.method === 'GET' && url === '/api/state') return send(req, res, 200, { keys: keysPublicas(), students: studentsView() });
+  if (req.method === 'GET' && url === '/api/state') return send(req, res, 200, { keys: keysPublicas(), students: studentsView(), viewer: viewerDoPedido(req) });
 
   if (req.method === 'POST' && url.startsWith('/api/')) {
     return readBody(req, b => {
@@ -138,8 +155,13 @@ http.createServer((req, res) => {
         const k = String(b.email || '').trim().toLowerCase(), t = tentativas[k] || { n: 0, ate: 0 };
         if (t.ate > Date.now()) return send(req, res, 429, { ok: false, erro: 'bloqueado' });
         const ok = confere(lerUsers()[k], b.senha);
-        if (ok) delete tentativas[k]; else { t.n++; if (t.n >= 5) { t.ate = Date.now() + 15 * 60000; t.n = 0; } tentativas[k] = t; }
-        return send(req, res, 200, { ok });
+        if (ok) { delete tentativas[k]; const token = criarSessao(k); return send(req, res, 200, { ok: true, token }); }
+        t.n++; if (t.n >= 5) { t.ate = Date.now() + 15 * 60000; t.n = 0; } tentativas[k] = t;
+        return send(req, res, 200, { ok: false });
+      }
+      if (url === '/api/logout') {
+        if (typeof b.token === 'string') delete sessoes[b.token];
+        return send(req, res, 200, { ok: true });
       }
       if (url === '/api/trocasenha') {
         const k = String(b.email || '').trim().toLowerCase(), us = lerUsers(), t = tentativas[k] || { n: 0, ate: 0 };
