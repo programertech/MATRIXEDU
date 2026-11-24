@@ -1528,7 +1528,6 @@ html{overflow-anchor:none; scrollbar-gutter:stable;}
     <input type="password" id="loginPass" autocomplete="current-password" required>
     <button type="submit" class="btn btn-primary submit">Entrar</button>
     <p id="loginMsg" role="status" class="form-msg"></p>
-    <button type="button" class="btn btn-primary btn-sm" id="pedirLic" hidden style="margin:4px 0 10px">📩 Pedir licença ao administrador</button>
   </form>
 
   <form id="signupForm" class="login-form" hidden>
@@ -1553,7 +1552,6 @@ html{overflow-anchor:none; scrollbar-gutter:stable;}
     </div>
     <button type="submit" class="btn btn-primary submit">Criar conta</button>
     <p id="signupMsg" role="status" class="form-msg"></p>
-    <button type="button" class="btn btn-primary btn-sm" id="pedirLicCad" hidden style="margin:4px 0 10px">📩 Pedir licença ao administrador</button>
     <p class="login-note" id="signupNote">Professores ficam pendentes até um(a) administrador(a) liberar a licença. Alunos entram direto após criar a conta.</p>
   </form>
 
@@ -2755,40 +2753,34 @@ html{overflow-anchor:none; scrollbar-gutter:stable;}
     tbody.innerHTML = rows || '<tr><td colspan="5" style="color:var(--ink-soft);">Nenhum acesso registrado ainda.</td></tr>';
   }
 
-  /* Professor pede a licença: registra o pedido e abre o e-mail já escrito para o administrador */
-  var pedirLic = document.getElementById('pedirLic'), pedirLicCad = document.getElementById('pedirLicCad');
-  function mostraPedir(btn, email, nome){
-    btn.dataset.email = email; btn.dataset.nome = nome; btn.hidden = false;
-  }
-  function pedirLicenca(btn, msgEl){
-    var email = btn.dataset.email, nome = btn.dataset.nome || email;
-    if(!email) return;
-    try{
-      if(users[email]){ users[email].pedidoEm = Date.now(); saveUsers(); }
-      registrarAtividade('Pedido de licença', nome, 'Professor(a) pediu a liberação da licença (' + email + ')');
-    }catch(err){}
-    var assunto = 'Pedido de licença - MatrixEdu';
-    var corpo = 'Olá! Sou professor(a) e gostaria de pedir a liberação da minha licença no MatrixEdu.\n\nNome: ' + nome + '\nE-mail da conta: ' + email + '\n\nObrigado(a)!';
-    msgEl.style.color = 'var(--green-check)';
-    msgEl.textContent = 'Pedido registrado. Abrindo o e-mail para o administrador…';
-    window.location.href = 'mailto:' + ADMIN_EMAIL + '?subject=' + encodeURIComponent(assunto) + '&body=' + encodeURIComponent(corpo);
-  }
-  pedirLic.addEventListener('click', function(){ pedirLicenca(pedirLic, loginMsg); });
-  pedirLicCad.addEventListener('click', function(){ pedirLicenca(pedirLicCad, signupMsg); });
-
   /* Depois de preencher o cadastro, a pessoa já entra direto (sem digitar tudo de novo) */
   var entrandoDireto = false;
   function entrarDireto(userKey, pass){
     document.getElementById('loginUser').value = userKey;
     document.getElementById('loginPass').value = pass;
     entrandoDireto = true;
-    loginForm.dispatchEvent(new Event('submit', {cancelable:true, bubbles:true}));
+    try{
+      loginForm.dispatchEvent(new Event('submit', {cancelable:true, bubbles:true}));
+    }catch(err){
+      signupMsg.style.color = 'var(--red-pen)';
+      signupMsg.textContent = 'Conta criada, mas não consegui entrar sozinho. Use a aba Entrar. (' + (err && err.message || 'erro') + ')';
+      return;
+    }
+    /* se o login automático falhar, mostra o motivo aqui (a aba Entrar está escondida) */
+    var tent = 0, iv = setInterval(function(){
+      tent++;
+      if(loginMsg.textContent){
+        signupMsg.style.color = 'var(--red-pen)';
+        signupMsg.textContent = 'Conta criada, mas não entrou sozinho: ' + loginMsg.textContent + ' Tente na aba Entrar.';
+        clearInterval(iv);
+      } else if(tent > 20){ clearInterval(iv); }
+    }, 300);
   }
 
   loginForm.addEventListener('submit', function(e){
     e.preventDefault();
     var direto = entrandoDireto; entrandoDireto = false;
-    loginMsg.textContent = ''; pedirLic.hidden = true; loginMsg.style.color = '';
+    loginMsg.textContent = ''; loginMsg.style.color = '';
     var userKey = document.getElementById('loginUser').value.trim().toLowerCase();
     var pass = document.getElementById('loginPass').value;
     var u = users[userKey];
@@ -2808,7 +2800,6 @@ html{overflow-anchor:none; scrollbar-gutter:stable;}
         ? 'Sua licença ainda não foi liberada pelo administrador.'
         : 'Sua licença foi bloqueada. Fale com o administrador.';
       regAcesso(userKey, u.nome, u.role, motivoBloqueio, false);
-      mostraPedir(pedirLic, userKey, u.nome);
       return;
     }
     delete lk[userKey]; localStorage.setItem(LK, JSON.stringify(lk));
@@ -2841,7 +2832,7 @@ html{overflow-anchor:none; scrollbar-gutter:stable;}
   signupForm.addEventListener('submit', function(e){
     e.preventDefault();
     signupMsg.style.color = 'var(--red-pen)';
-    signupMsg.textContent = ''; pedirLicCad.hidden = true;
+    signupMsg.textContent = '';
     var nome = document.getElementById('suNome').value.trim();
     var userKey = document.getElementById('suUser').value.trim().toLowerCase();
     var pass = document.getElementById('suPass').value;
