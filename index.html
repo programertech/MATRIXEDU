@@ -419,7 +419,7 @@ tr.stu-off td{opacity:.55;}
 @keyframes eduFloat{0%,100%{transform:rotate(-3deg) translateY(0);} 50%{transform:rotate(-1deg) translateY(-3px);}}
 @media (prefers-reduced-motion:reduce){.logo-edu,.logo-grid span{animation:none;}}
 /* ===== Tema: estudos + gestão escolar (layout original mantido) ===== */
-.hero{padding-bottom:88px;}
+.hero{padding-bottom:56px;}
 .hero-doodles{opacity:.32; z-index:0; width:100%; height:100%;}
 .hero-inner{z-index:1;}
 .hero-doodles *{stroke:var(--chalk-white); fill:none; stroke-width:2.4; stroke-linecap:round; stroke-linejoin:round;}
@@ -551,7 +551,17 @@ nav.main-links{position:relative;}
 .bell-dot.intervalo{--glow:217,97,79; animation:dotPulse 1.8s infinite;}
 .bell-meter{flex-basis:100%; margin-top:2px;}
 .bell-meter[hidden]{display:none;}
-#mxAviso[hidden]{display:none !important;}
+/* ===== Organização das seções: separadores e rolagem do menu ===== */
+section{scroll-margin-top:12px;}
+#mural, #ferramentas, #acessibilidade{border-top:1px solid rgba(244,241,230,.1);}
+.mural-list{display:grid; gap:14px; max-width:760px;}
+.mural-item{background:var(--paper); color:var(--ink); border-radius:var(--radius); box-shadow:var(--shadow-paper); padding:16px 18px; border-left:5px solid var(--amber);}
+.mural-item time{display:block; font-family:var(--font-mono); font-size:.72rem; letter-spacing:.04em; text-transform:uppercase; color:var(--ink-soft); margin-bottom:6px;}
+.mural-item p{margin:0; white-space:pre-wrap; overflow-wrap:anywhere;}
+.mural-item .mural-del{margin-top:10px;}
+.mural-vazio{color:#d8d3c2;}
+.mural-form{max-width:760px; margin-bottom:18px; background:var(--paper); color:var(--ink); border-radius:var(--radius); box-shadow:var(--shadow-paper); padding:16px 18px;}
+.mural-form textarea{width:100%; padding:8px; border-radius:8px; border:1px solid var(--paper-line); font:inherit; margin:8px 0;}
 .bell-meter-top{display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap; font-family:var(--font-mono); font-size:.78rem; color:var(--ink-soft); margin-bottom:7px;}
 .bell-meter-top span:first-child{color:var(--ink); font-weight:600;}
 .bell-track{height:10px; border-radius:999px; background:var(--paper-2); overflow:hidden;}
@@ -982,6 +992,7 @@ html{overflow-anchor:none; scrollbar-gutter:stable;}
     <nav class="main-links" id="mainNav">
       <span id="navPill" aria-hidden="true"></span>
       <a href="#inicio" class="active">Início</a>
+      <a href="#mural">Mural</a>
       <a href="#meuAcesso" id="navMeu" hidden>Meu acesso</a>
       <a href="#grade">Horários</a>
       <a href="#carrinhos">Notebooks</a>
@@ -995,18 +1006,6 @@ html{overflow-anchor:none; scrollbar-gutter:stable;}
 </header>
 
 <main id="conteudo">
-<div id="mxAviso" hidden style="background:var(--amber);color:var(--ink);font-weight:600;padding:12px 16px;display:flex;gap:12px;align-items:center;justify-content:space-between"><span></span><button type="button" id="mxAvisoX" aria-label="Fechar aviso" style="border:0;background:transparent;font-size:1.2rem;cursor:pointer;color:var(--ink)">✕</button></div>
-  <section id="meuAcesso" hidden>
-    <div class="wrap">
-      <div class="timer-card" id="taCard">
-        <div><p class="eyebrow" style="margin:0 0 4px;">Meu acesso</p><h2 id="taTitulo">Aula em andamento</h2><p id="taSub"></p></div>
-        <div class="timer-big" id="taTempo" role="timer" aria-live="off">50:00</div>
-        <div class="tbar"><div class="tbar-fill" id="taFill"></div></div>
-        <div class="timer-warn" id="taWarn" role="alert" hidden></div>
-      </div>
-    </div>
-  </section>
-
   <section class="hero" id="inicio">
     <svg class="hero-doodles" viewBox="0 0 1200 600" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
       <text x="560" y="48">E = mc²</text><text x="880" y="46">2 + 2 = 4</text>
@@ -1040,28 +1039,22 @@ html{overflow-anchor:none; scrollbar-gutter:stable;}
     </div>
   </section>
 
-  <section id="alunos" hidden>
+  <section id="mural">
     <div class="wrap">
-      <div class="section-head">
-        <p class="eyebrow">🧑‍🏫 Controle de sala</p>
-        <h2>Acesso dos alunos</h2>
-        <p>Veja os alunos que estão logados agora e bloqueie ou libere o acesso de cada um. Sem ação sua, vale o horário automático: bloqueado só durante as aulas (07h10–14h00 e 14h10–21h00), liberado nos intervalos (08h40–09h00, 11h30–12h20, 15h50–16h10 e 18h40–19h10) e fora do horário de aula.</p>
+      <div class="section-head"><p class="eyebrow">Recados da escola</p><h2>Mural de avisos</h2><p>Os avisos mais novos aparecem primeiro.</p></div>
+      <div class="mural-form" id="muralForm" hidden><strong>📢 Novo aviso</strong><textarea id="muralTxt" rows="3" maxlength="300" placeholder="Escreva o aviso (até 300 caracteres)"></textarea><button class="btn btn-primary btn-sm" id="muralPub" type="button">Publicar aviso</button></div>
+      <div class="mural-list" id="muralList"></div>
+    </div>
+  </section>
+
+  <section id="meuAcesso" hidden>
+    <div class="wrap">
+      <div class="timer-card" id="taCard">
+        <div><p class="eyebrow" style="margin:0 0 4px;">Meu acesso</p><h2 id="taTitulo">Aula em andamento</h2><p id="taSub"></p></div>
+        <div class="timer-big" id="taTempo" role="timer" aria-live="off">50:00</div>
+        <div class="tbar"><div class="tbar-fill" id="taFill"></div></div>
+        <div class="timer-warn" id="taWarn" role="alert" hidden></div>
       </div>
-      <div class="bell-card">
-        <div class="bell-status"><span class="bell-dot aula" aria-hidden="true"></span><div><strong id="stuClock">—</strong><div class="bell-sub" id="stuStats">0 alunos online</div></div></div>
-        <div class="stu-auto" hidden><span>Renovar acesso a cada aula</span><label class="switch"><input type="checkbox" id="stuAuto" aria-label="Renovar acesso automaticamente a cada aula"><span class="slider-tg"></span></label></div>
-        <div class="bell-actions">
-          <button type="button" class="btn b-on" id="stuAllOn">Liberar todos</button>
-          <button type="button" class="btn b-off" id="stuAllOff">Bloquear todos</button>
-        </div>
-      </div>
-      <div class="attendance-table-wrap" style="margin-top:0;">
-        <table class="attendance-table">
-          <thead><tr><th>Aluno(a) logado(a)</th><th>E-mail</th><th>Acesso</th><th>Ação</th></tr></thead>
-          <tbody id="stuBody"></tbody>
-        </table>
-      </div>
-      <p class="admin-note">Só aparecem alunos logados neste momento. O bloqueio congela a tela do aluno na hora. "Automático" devolve ao horário padrão (bloqueado durante as aulas; liberado nos intervalos 08h40–09h00, 11h30–12h20, 15h50–16h10 e 18h40–19h10 e fora do horário de aula).</p>
     </div>
   </section>
 
@@ -1201,13 +1194,37 @@ html{overflow-anchor:none; scrollbar-gutter:stable;}
     </div>
   </section>
 
+  <section id="alunos" hidden>
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">🧑‍🏫 Controle de sala</p>
+        <h2>Acesso dos alunos</h2>
+        <p>Veja os alunos que estão logados agora e bloqueie ou libere o acesso de cada um. Sem ação sua, vale o horário automático: bloqueado só durante as aulas (07h10–14h00 e 14h10–21h00), liberado nos intervalos (08h40–09h00, 11h30–12h20, 15h50–16h10 e 18h40–19h10) e fora do horário de aula.</p>
+      </div>
+      <div class="bell-card">
+        <div class="bell-status"><span class="bell-dot aula" aria-hidden="true"></span><div><strong id="stuClock">—</strong><div class="bell-sub" id="stuStats">0 alunos online</div></div></div>
+        <div class="stu-auto" hidden><span>Renovar acesso a cada aula</span><label class="switch"><input type="checkbox" id="stuAuto" aria-label="Renovar acesso automaticamente a cada aula"><span class="slider-tg"></span></label></div>
+        <div class="bell-actions">
+          <button type="button" class="btn b-on" id="stuAllOn">Liberar todos</button>
+          <button type="button" class="btn b-off" id="stuAllOff">Bloquear todos</button>
+        </div>
+      </div>
+      <div class="attendance-table-wrap" style="margin-top:0;">
+        <table class="attendance-table">
+          <thead><tr><th>Aluno(a) logado(a)</th><th>E-mail</th><th>Acesso</th><th>Ação</th></tr></thead>
+          <tbody id="stuBody"></tbody>
+        </table>
+      </div>
+      <p class="admin-note">Só aparecem alunos logados neste momento. O bloqueio congela a tela do aluno na hora. "Automático" devolve ao horário padrão (bloqueado durante as aulas; liberado nos intervalos 08h40–09h00, 11h30–12h20, 15h50–16h10 e 18h40–19h10 e fora do horário de aula).</p>
+    </div>
+  </section>
+
   <section id="ferramentas" hidden>
     <div class="wrap">
       <div class="section-head"><p class="eyebrow">Professores e administração</p><h2>Ferramentas</h2><p>Backup dos dados, relatórios, QR codes e avisos de intervalo.</p></div>
       <div class="tool-grid">
         <div class="tool-card"><h3>💾 Backup</h3><p>Salva grade, carrinhos, histórico e usuários em um arquivo. O arquivo contém senhas: guarde com cuidado.</p><button class="btn btn-primary btn-sm" id="bkExp" type="button">Exportar backup</button> <label class="btn btn-ghost btn-sm" style="cursor:pointer;">Importar<input type="file" id="bkImp" accept=".json" hidden></label></div>
         <div class="tool-card"><h3>📊 Histórico dos carrinhos</h3><p>Baixa a lista de retiradas e devoluções em CSV (abre no Excel).</p><button class="btn btn-primary btn-sm" id="csvExp" type="button">Baixar CSV</button></div>
-        <div class="tool-card" id="avCard" hidden><h3>📢 Mural de avisos</h3><p>Escreva um recado que aparece no topo do site para todos. Deixe vazio e salve para remover.</p><textarea id="avTxt" rows="3" maxlength="300" style="width:100%;padding:8px;border-radius:8px;border:1px solid var(--paper-line);font:inherit;margin-bottom:8px"></textarea><button class="btn btn-primary btn-sm" id="avSalvar" type="button">Publicar aviso</button></div>
         <div class="tool-card" id="pwAllCard" hidden><h3>🔐 Trocar senha de uma pessoa</h3><p>Escolha o e-mail da pessoa e defina a senha nova dela (mínimo 4 caracteres).</p><select id="pwUser" style="width:100%;padding:8px;border-radius:8px;border:1px solid var(--paper-line);margin-bottom:6px"><option value="">Escolha o e-mail da pessoa…</option></select><input type="password" id="pwAllNova" placeholder="Senha nova" autocomplete="new-password" style="width:100%;padding:8px;border-radius:8px;border:1px solid var(--paper-line);margin-bottom:6px"><input type="password" id="pwAllConf" placeholder="Repita a senha nova" autocomplete="new-password" style="width:100%;padding:8px;border-radius:8px;border:1px solid var(--paper-line);margin-bottom:8px"><button class="btn btn-primary btn-sm" id="pwAllSalvar" type="button">Trocar senha</button></div>
         <div class="tool-card"><h3>📈 Relatório de uso</h3><p>Resumo por carrinho, sala, turno e professor. Abre pronto para imprimir ou salvar em PDF.</p><button class="btn btn-primary btn-sm" id="relBtn" type="button">Gerar relatório</button></div>
         <div class="tool-card"><h3>🔳 QR codes</h3><p>Gera uma folha para imprimir com um QR por carrinho e por sala, que abre o registro já preenchido.</p><button class="btn btn-primary btn-sm" id="qrBtn" type="button">Gerar folha de QR</button></div>
@@ -1397,6 +1414,7 @@ html{overflow-anchor:none; scrollbar-gutter:stable;}
       </div>
     </div>
   </section>
+
 </main>
 
 <footer>
@@ -3525,16 +3543,37 @@ html{overflow-anchor:none; scrollbar-gutter:stable;}
   /* Mural de avisos + trocar senha */
   var AV = 'matrixedu_aviso_v1', SESS = 'matrixedu_session_v1';
   function eu(){ try{ var s = JSON.parse(localStorage.getItem(SESS)), us = JSON.parse(localStorage.getItem('matrixedu_users_v2')) || {}; return s && us[s.user] ? {email:s.user, role:us[s.user].role} : null; }catch(e){ return null; } }
-  function mostraAviso(){
-    var box = $('mxAviso'), a = null; try{ a = JSON.parse(localStorage.getItem(AV)); }catch(e){}
-    var fechado = ''; try{ fechado = sessionStorage.getItem('mx_aviso_fechado') || ''; }catch(e){}
-    if(a && a.texto && fechado !== String(a.em)){ box.hidden = false; box.querySelector('span').textContent = '📢 ' + a.texto; box.dataset.em = a.em; } else { box.hidden = true; }
-    var admin = (eu() || {}).role === 'admin'; $('avCard').hidden = !admin; $('pwAllCard').hidden = !admin;
-    if(admin && !$('avTxt').dataset.t){ $('avTxt').value = (a && a.texto) || ''; $('avTxt').dataset.t = '1'; }
+  function lerAvisos(){
+    var a = null; try{ a = JSON.parse(localStorage.getItem(AV)); }catch(e){}
+    if(Array.isArray(a)) return a;
+    if(a && a.texto) return [{id:'a' + (a.em || 0), texto:String(a.texto), em:a.em || Date.now()}]; /* aviso antigo (um só) */
+    return [];
   }
-  $('mxAvisoX').addEventListener('click', function(){ try{ sessionStorage.setItem('mx_aviso_fechado', $('mxAviso').dataset.em); }catch(e){} $('mxAviso').hidden = true; });
-  $('avSalvar').addEventListener('click', function(){ var t = $('avTxt').value.trim(); localStorage.setItem(AV, JSON.stringify({texto:t, em:Date.now()})); toast(t ? 'Aviso publicado para todos.' : 'Aviso removido.'); mostraAviso(); });
-  mostraAviso(); setInterval(mostraAviso, 5000);
+  var muralSig = '';
+  function mostraAviso(){
+    var admin = (eu() || {}).role === 'admin';
+    $('pwAllCard').hidden = !admin; $('muralForm').hidden = !admin;
+    var raw = localStorage.getItem(AV) || '', sig = raw + '|' + admin;
+    if(sig === muralSig) return; muralSig = sig;
+    var lista = lerAvisos(), box = $('muralList'); box.innerHTML = '';
+    if(!lista.length){ var v = document.createElement('p'); v.className = 'mural-vazio'; v.textContent = 'Nenhum aviso por enquanto.'; box.appendChild(v); return; }
+    lista.forEach(function(av){
+      var it = document.createElement('div'); it.className = 'mural-item';
+      var t = document.createElement('time'); t.textContent = new Date(av.em).toLocaleString('pt-BR', {dateStyle:'short', timeStyle:'short'});
+      var p = document.createElement('p'); p.textContent = av.texto;
+      it.appendChild(t); it.appendChild(p);
+      if(admin){ var b = document.createElement('button'); b.type = 'button'; b.className = 'btn btn-ghost btn-sm mural-del'; b.textContent = 'Apagar'; b.addEventListener('click', function(){ apagarAviso(av.id); }); it.appendChild(b); }
+      box.appendChild(it);
+    });
+  }
+  function salvarAvisos(l){ localStorage.setItem(AV, JSON.stringify(l)); mostraAviso(); }
+  function apagarAviso(id){ if(!confirm('Apagar este aviso?')) return; salvarAvisos(lerAvisos().filter(function(x){ return x.id !== id; })); toast('Aviso apagado.'); }
+  $('muralPub').addEventListener('click', function(){
+    var t = $('muralTxt').value.trim(); if(!t){ toast('Escreva o aviso antes de publicar.'); return; }
+    var l = lerAvisos(); l.unshift({id:'a' + Date.now().toString(36), texto:t, em:Date.now()});
+    salvarAvisos(l.slice(0, 50)); $('muralTxt').value = ''; toast('Aviso publicado.');
+  });
+  mostraAviso(); setInterval(mostraAviso, 3000);
   /* Trocar a senha de uma pessoa, escolhida pelo e-mail (somente administrador) */
   function preencheUsuarios(){
     var sel = $('pwUser'); if(!sel || document.activeElement === sel) return;
