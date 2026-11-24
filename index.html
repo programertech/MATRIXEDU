@@ -407,8 +407,8 @@ tr.stu-off td{opacity:.55;}
 .login-modal{box-shadow:0 18px 50px rgba(0,0,0,.45), 0 0 0 1px var(--paper-line);}
 /* ===== Logo junto e animado ===== */
 .logo{gap:3px;}
-.logo-edu{margin-left:0; display:inline-block; font-size:2.1rem; text-shadow:0 0 14px rgba(232,184,75,.35); animation:eduIn .7s .7s cubic-bezier(.2,1.4,.4,1) both, eduFloat 3.4s ease-in-out 1.6s infinite;}
-.logo-grid span{animation:logoIn .5s cubic-bezier(.2,1.4,.4,1) both, logoWave 3.6s ease-in-out 1.4s infinite;}
+.logo-edu{margin-left:0; display:inline-block; font-size:2.1rem; text-shadow:0 0 14px rgba(232,184,75,.35); animation:eduIn .7s .7s cubic-bezier(.2,1.4,.4,1) both;}
+.logo-grid span{animation:logoIn .5s cubic-bezier(.2,1.4,.4,1) both;}
 .logo-grid span:nth-child(1){animation-delay:0s,1.4s;} .logo-grid span:nth-child(2){animation-delay:.08s,1.6s;}
 .logo-grid span:nth-child(3){animation-delay:.16s,1.8s;} .logo-grid span:nth-child(4){animation-delay:.24s,2s;}
 .logo-grid span:nth-child(5){animation-delay:.32s,2.2s;} .logo-grid span:nth-child(6){animation-delay:.4s,2.4s;}
@@ -933,6 +933,26 @@ nav.main-links a[href="#ferramentas"]::before{content:'🛠️';}
 /* Cabeçalho do celular em uma linha só */
 @media (max-width:900px){ .nav-inner{flex-wrap:nowrap !important; gap:8px; padding-left:0; padding-right:0;} .nav-inner .logo{min-width:0; flex:0 1 auto;} #authBtn{padding:9px 12px; font-size:.82rem; flex:0 0 auto;} .burger{flex:0 0 auto; padding:8px 10px; font-size:1rem;} }
 @media (max-width:420px){ .logo-grid{grid-template-columns:repeat(6,12px);} .logo-grid span{width:12px; height:12px; font-size:.5rem;} .logo-edu{font-size:1.5rem;} #authBtn{max-width:112px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;} }
+
+/* ===== correção do cabeçalho no celular (iPhone e Android) ===== */
+@media (max-width:900px){
+  header.site{position:sticky; top:0; padding-top:env(safe-area-inset-top,0px); -webkit-backdrop-filter:blur(6px);}
+  header.site .nav-inner{flex-wrap:nowrap !important; align-items:center; min-height:0;}
+  header.site .logo{flex:0 1 auto; min-width:0; gap:6px;}
+  .logo-edu{white-space:nowrap;}
+  .side-status, #navPill{display:none !important;}
+  /* o menu abre por cima da página, logo abaixo do cabeçalho, em vez de ficar dentro da linha do cabeçalho */
+  nav.main-links{position:absolute !important; top:100%; left:0; right:0; width:auto; display:none; flex-direction:column; gap:4px;
+    padding:12px 16px calc(16px + env(safe-area-inset-bottom,0px)); background:var(--chalk-bg-2);
+    border-bottom:1px solid rgba(244,241,230,.14); box-shadow:0 16px 30px rgba(0,0,0,.45);
+    max-height:calc(100vh - 80px); max-height:calc(100dvh - 80px); overflow-y:auto; -webkit-overflow-scrolling:touch; overscroll-behavior:contain;}
+  nav.main-links.open{display:flex;}
+  nav.main-links a{animation:none; padding:12px 14px; min-height:44px; display:flex; align-items:center; gap:10px;}
+}
+/* anti-tremor: números com largura fixa e texto de status sem reflow */
+#stuClock, #stuStats, #ssTitle, #ssSub, .bell-sub, .hero-stats, .timer-card, table.grade td.time-cell{font-variant-numeric:tabular-nums;}
+html{overflow-anchor:none; scrollbar-gutter:stable;}
+.bell-status > div, .side-status > div{min-width:0;}
 </style>
 </head>
 <body>
@@ -1188,6 +1208,7 @@ nav.main-links a[href="#ferramentas"]::before{content:'🛠️';}
         <div class="tool-card"><h3>📊 Histórico dos carrinhos</h3><p>Baixa a lista de retiradas e devoluções em CSV (abre no Excel).</p><button class="btn btn-primary btn-sm" id="csvExp" type="button">Baixar CSV</button></div>
         <div class="tool-card" id="avCard" hidden><h3>📢 Mural de avisos</h3><p>Escreva um recado que aparece no topo do site para todos. Deixe vazio e salve para remover.</p><textarea id="avTxt" rows="3" maxlength="300" style="width:100%;padding:8px;border-radius:8px;border:1px solid var(--paper-line);font:inherit;margin-bottom:8px"></textarea><button class="btn btn-primary btn-sm" id="avSalvar" type="button">Publicar aviso</button></div>
         <div class="tool-card"><h3>🔑 Trocar minha senha</h3><p>Digite a senha atual e a nova (mínimo 4 caracteres).</p><input type="password" id="pwAtual" placeholder="Senha atual" autocomplete="current-password" style="width:100%;padding:8px;border-radius:8px;border:1px solid var(--paper-line);margin-bottom:6px"><input type="password" id="pwNova" placeholder="Senha nova" autocomplete="new-password" style="width:100%;padding:8px;border-radius:8px;border:1px solid var(--paper-line);margin-bottom:8px"><button class="btn btn-primary btn-sm" id="pwSalvar" type="button">Alterar senha</button></div>
+        <div class="tool-card" id="pwAllCard" hidden><h3>🔐 Trocar senha de todos</h3><p>Define a mesma senha nova para todos os professores e alunos (mínimo 4 caracteres). A sua conta de administrador não muda. Cada pessoa pode trocar depois em “Trocar minha senha”.</p><input type="password" id="pwAllNova" placeholder="Senha nova para todos" autocomplete="new-password" style="width:100%;padding:8px;border-radius:8px;border:1px solid var(--paper-line);margin-bottom:6px"><input type="password" id="pwAllConf" placeholder="Repita a senha nova" autocomplete="new-password" style="width:100%;padding:8px;border-radius:8px;border:1px solid var(--paper-line);margin-bottom:8px"><button class="btn btn-primary btn-sm" id="pwAllSalvar" type="button">Trocar senha de todos</button></div>
         <div class="tool-card"><h3>📈 Relatório de uso</h3><p>Resumo por carrinho, sala, turno e professor. Abre pronto para imprimir ou salvar em PDF.</p><button class="btn btn-primary btn-sm" id="relBtn" type="button">Gerar relatório</button></div>
         <div class="tool-card"><h3>🔳 QR codes</h3><p>Gera uma folha para imprimir com um QR por carrinho e por sala, que abre o registro já preenchido.</p><button class="btn btn-primary btn-sm" id="qrBtn" type="button">Gerar folha de QR</button></div>
         <div class="tool-card"><h3>🔔 Avisos de intervalo</h3><p>Sinal sonoro e aviso na tela no início e no fim dos intervalos, e 5 min antes de o acesso dos alunos bloquear.</p><label class="tool-sw"><input type="checkbox" id="avisoSw"> Ativar avisos</label></div>
@@ -1507,6 +1528,7 @@ nav.main-links a[href="#ferramentas"]::before{content:'🛠️';}
     <input type="password" id="loginPass" autocomplete="current-password" required>
     <button type="submit" class="btn btn-primary submit">Entrar</button>
     <p id="loginMsg" role="status" class="form-msg"></p>
+    <button type="button" class="btn btn-primary btn-sm" id="pedirLic" hidden style="margin:4px 0 10px">📩 Pedir licença ao administrador</button>
   </form>
 
   <form id="signupForm" class="login-form" hidden>
@@ -1531,6 +1553,7 @@ nav.main-links a[href="#ferramentas"]::before{content:'🛠️';}
     </div>
     <button type="submit" class="btn btn-primary submit">Criar conta</button>
     <p id="signupMsg" role="status" class="form-msg"></p>
+    <button type="button" class="btn btn-primary btn-sm" id="pedirLicCad" hidden style="margin:4px 0 10px">📩 Pedir licença ao administrador</button>
     <p class="login-note" id="signupNote">Professores ficam pendentes até um(a) administrador(a) liberar a licença. Alunos entram direto após criar a conta.</p>
   </form>
 
@@ -1660,6 +1683,13 @@ nav.main-links a[href="#ferramentas"]::before{content:'🛠️';}
   mainNav.querySelectorAll('a').forEach(function(a){
     a.addEventListener('click', function(){ mainNav.classList.remove('open'); });
   });
+
+  /* fecha o menu ao tocar fora, ao apertar Esc ou ao girar/aumentar a tela */
+  document.addEventListener('click', function(e){
+    if(mainNav.classList.contains('open') && !mainNav.contains(e.target) && !burger.contains(e.target)){ mainNav.classList.remove('open'); burger.setAttribute('aria-expanded', 'false'); }
+  });
+  document.addEventListener('keydown', function(e){ if(e.key === 'Escape'){ mainNav.classList.remove('open'); burger.setAttribute('aria-expanded', 'false'); } });
+  window.addEventListener('resize', function(){ if(window.innerWidth > 900){ mainNav.classList.remove('open'); burger.setAttribute('aria-expanded', 'false'); } });
 
   /* ---------- Botão para mostrar/ocultar a área de funções ---------- */
   var menuToggle = document.getElementById('menuToggle');
@@ -2725,9 +2755,40 @@ nav.main-links a[href="#ferramentas"]::before{content:'🛠️';}
     tbody.innerHTML = rows || '<tr><td colspan="5" style="color:var(--ink-soft);">Nenhum acesso registrado ainda.</td></tr>';
   }
 
+  /* Professor pede a licença: registra o pedido e abre o e-mail já escrito para o administrador */
+  var pedirLic = document.getElementById('pedirLic'), pedirLicCad = document.getElementById('pedirLicCad');
+  function mostraPedir(btn, email, nome){
+    btn.dataset.email = email; btn.dataset.nome = nome; btn.hidden = false;
+  }
+  function pedirLicenca(btn, msgEl){
+    var email = btn.dataset.email, nome = btn.dataset.nome || email;
+    if(!email) return;
+    try{
+      if(users[email]){ users[email].pedidoEm = Date.now(); saveUsers(); }
+      registrarAtividade('Pedido de licença', nome, 'Professor(a) pediu a liberação da licença (' + email + ')');
+    }catch(err){}
+    var assunto = 'Pedido de licença - MatrixEdu';
+    var corpo = 'Olá! Sou professor(a) e gostaria de pedir a liberação da minha licença no MatrixEdu.\n\nNome: ' + nome + '\nE-mail da conta: ' + email + '\n\nObrigado(a)!';
+    msgEl.style.color = 'var(--green-check)';
+    msgEl.textContent = 'Pedido registrado. Abrindo o e-mail para o administrador…';
+    window.location.href = 'mailto:' + ADMIN_EMAIL + '?subject=' + encodeURIComponent(assunto) + '&body=' + encodeURIComponent(corpo);
+  }
+  pedirLic.addEventListener('click', function(){ pedirLicenca(pedirLic, loginMsg); });
+  pedirLicCad.addEventListener('click', function(){ pedirLicenca(pedirLicCad, signupMsg); });
+
+  /* Depois de preencher o cadastro, a pessoa já entra direto (sem digitar tudo de novo) */
+  var entrandoDireto = false;
+  function entrarDireto(userKey, pass){
+    document.getElementById('loginUser').value = userKey;
+    document.getElementById('loginPass').value = pass;
+    entrandoDireto = true;
+    loginForm.dispatchEvent(new Event('submit', {cancelable:true, bubbles:true}));
+  }
+
   loginForm.addEventListener('submit', function(e){
     e.preventDefault();
-    loginMsg.textContent = '';
+    var direto = entrandoDireto; entrandoDireto = false;
+    loginMsg.textContent = ''; pedirLic.hidden = true; loginMsg.style.color = '';
     var userKey = document.getElementById('loginUser').value.trim().toLowerCase();
     var pass = document.getElementById('loginPass').value;
     var u = users[userKey];
@@ -2741,12 +2802,13 @@ nav.main-links a[href="#ferramentas"]::before{content:'🛠️';}
       regAcesso(userKey, u ? u.nome : '—', u ? u.role : '—', 'Senha ou e-mail incorretos', false);
       return;
     }
-    if(!MODO_TESTE && u.role === 'professor' && u.licenca !== 'liberada'){
+    if(!MODO_TESTE && !direto && u.role === 'professor' && u.licenca !== 'liberada'){
       var motivoBloqueio = u.licenca === 'pendente' ? 'Licença pendente' : 'Licença bloqueada';
       loginMsg.textContent = u.licenca === 'pendente'
         ? 'Sua licença ainda não foi liberada pelo administrador.'
         : 'Sua licença foi bloqueada. Fale com o administrador.';
       regAcesso(userKey, u.nome, u.role, motivoBloqueio, false);
+      mostraPedir(pedirLic, userKey, u.nome);
       return;
     }
     delete lk[userKey]; localStorage.setItem(LK, JSON.stringify(lk));
@@ -2779,7 +2841,7 @@ nav.main-links a[href="#ferramentas"]::before{content:'🛠️';}
   signupForm.addEventListener('submit', function(e){
     e.preventDefault();
     signupMsg.style.color = 'var(--red-pen)';
-    signupMsg.textContent = '';
+    signupMsg.textContent = ''; pedirLicCad.hidden = true;
     var nome = document.getElementById('suNome').value.trim();
     var userKey = document.getElementById('suUser').value.trim().toLowerCase();
     var pass = document.getElementById('suPass').value;
@@ -2801,7 +2863,8 @@ nav.main-links a[href="#ferramentas"]::before{content:'🛠️';}
           }
           signupForm.reset(); resetCaptcha();
           signupMsg.style.color = 'var(--green-check)';
-          signupMsg.textContent = res.licenca === 'liberada' ? 'Conta criada! Já pode entrar.' : 'Conta criada! Aguarde a liberação da licença pelo administrador.';
+          signupMsg.textContent = 'Conta criada! Entrando…';
+          entrarDireto(userKey, pass);
         });
       return;
     }
@@ -2811,8 +2874,9 @@ nav.main-links a[href="#ferramentas"]::before{content:'🛠️';}
     signupForm.reset();
     resetCaptcha();
     signupMsg.style.color = 'var(--green-check)';
-    signupMsg.textContent = (MODO_TESTE || perfilNovo === 'aluno') ? 'Conta criada! Já pode entrar.' : 'Conta criada! Aguarde a liberação da licença pelo administrador.';
+    signupMsg.textContent = 'Conta criada! Entrando…';
     if(!adminSection.hidden) renderAdminTable();
+    entrarDireto(userKey, pass);
   });
 
   document.querySelectorAll('.login-tabs button').forEach(function(btn){
@@ -2828,18 +2892,29 @@ nav.main-links a[href="#ferramentas"]::before{content:'🛠️';}
     });
   });
 
+  function updateLicBadge(){
+    var n = Object.keys(users).filter(function(k){ return users[k].role === 'professor' && users[k].licenca === 'pendente'; }).length;
+    navAdminLink.textContent = n ? 'Licenças (' + n + ' pendente' + (n > 1 ? 's' : '') + ')' : 'Licenças';
+  }
+
   function renderAdminTable(){
     var tbody = document.getElementById('adminTableBody');
     var rows = '';
-    Object.keys(users).forEach(function(key){
+    var ordem = {pendente:0, bloqueada:1, liberada:2};
+    Object.keys(users).sort(function(a, b){
+      var la = ordem[users[a].licenca], lb = ordem[users[b].licenca];
+      return (la == null ? 3 : la) - (lb == null ? 3 : lb) || String(users[a].nome).localeCompare(String(users[b].nome));
+    }).forEach(function(key){
       var u = users[key];
       if(u.role !== 'professor') return;
-      rows += '<tr><td>' + u.nome + '</td><td>' + key + '</td><td><span class="status-pill ' + u.licenca + '">' + u.licenca + '</span></td><td>' +
+      if(!u.licenca) u.licenca = 'pendente';
+      rows += '<tr><td>' + esc(u.nome) + '</td><td>' + esc(key) + '</td><td><span class="status-pill ' + esc(u.licenca) + '">' + esc(u.licenca) + '</span>' + (u.pedidoEm && u.licenca !== 'liberada' ? ' <small title="Pedido de licença">📩 pediu em ' + new Date(u.pedidoEm).toLocaleDateString('pt-BR') + '</small>' : '') + '</td><td>' +
         (u.licenca !== 'liberada' ? '<button type="button" class="liberar" data-user="' + key + '" data-acao="liberar">Liberar licença</button>' : '') +
         (u.licenca !== 'bloqueada' ? '<button type="button" class="bloquear" data-user="' + key + '" data-acao="bloquear">Bloquear</button>' : '') +
         '</td></tr>';
     });
     tbody.innerHTML = rows || '<tr><td colspan="4" style="color:var(--ink-soft);">Nenhum professor cadastrado ainda.</td></tr>';
+    updateLicBadge();
     tbody.querySelectorAll('button').forEach(function(btn){
       btn.addEventListener('click', function(){
         var key = btn.dataset.user;
@@ -2985,8 +3060,10 @@ nav.main-links a[href="#ferramentas"]::before{content:'🛠️';}
         '<button type="button" class="stu-btn off" data-u="' + esc(k) + '" data-act="off"' + (!ac.open ? ' disabled' : '') + '>🔒 Bloquear</button>' +
         '<button type="button" class="stu-btn" data-u="' + esc(k) + '" data-act="auto"' + (ov ? '' : ' disabled') + '>⏱ Automático</button></td></tr>';
     });
-    stuBody.innerHTML = rows || '<tr><td colspan="4" style="color:var(--ink-soft);">Nenhum aluno logado no momento.</td></tr>';
-    document.getElementById('stuStats').textContent = keys.length + ' aluno(s) logado(s) · ' + livres + ' liberado(s) · ' + (keys.length - livres) + ' bloqueado(s)';
+    var htmlRows = rows || '<tr><td colspan="4" style="color:var(--ink-soft);">Nenhum aluno logado no momento.</td></tr>';
+    if(stuBody.dataset.h !== htmlRows){ stuBody.innerHTML = htmlRows; stuBody.dataset.h = htmlRows; }
+    var stTxt = keys.length + ' aluno(s) logado(s) · ' + livres + ' liberado(s) · ' + (keys.length - livres) + ' bloqueado(s)', stEl = document.getElementById('stuStats');
+    if(stEl.textContent !== stTxt) stEl.textContent = stTxt;
   }
 
   function setOverride(email, v){
@@ -3052,7 +3129,7 @@ nav.main-links a[href="#ferramentas"]::before{content:'🛠️';}
   });
   setInterval(beat, 5000);
   if(window.MX){ setInterval(function(){
-    try{ var nu = JSON.parse(localStorage.getItem(USERS_KEY)); if(nu && JSON.stringify(nu) !== JSON.stringify(users)) users = nu; }catch(e){}
+    try{ var nu = JSON.parse(localStorage.getItem(USERS_KEY)); if(nu && JSON.stringify(nu) !== JSON.stringify(users)){ users = nu; if(session && users[session.user] && users[session.user].role === 'admin'){ renderAdminTable(); } } }catch(e){}
     /* se a conta de quem está logado foi apagada (reset de logins), volta para a tela de login */
     if(session && !users[session.user]){ session = null; localStorage.removeItem(SESSION_KEY); updateAuthUI(); openLogin(); }
   }, 1500); }
@@ -3459,7 +3536,7 @@ nav.main-links a[href="#ferramentas"]::before{content:'🛠️';}
     var box = $('mxAviso'), a = null; try{ a = JSON.parse(localStorage.getItem(AV)); }catch(e){}
     var fechado = ''; try{ fechado = sessionStorage.getItem('mx_aviso_fechado') || ''; }catch(e){}
     if(a && a.texto && fechado !== String(a.em)){ box.hidden = false; box.querySelector('span').textContent = '📢 ' + a.texto; box.dataset.em = a.em; } else { box.hidden = true; }
-    var admin = (eu() || {}).role === 'admin'; $('avCard').hidden = !admin;
+    var admin = (eu() || {}).role === 'admin'; $('avCard').hidden = !admin; $('pwAllCard').hidden = !admin;
     if(admin && !$('avTxt').dataset.t){ $('avTxt').value = (a && a.texto) || ''; $('avTxt').dataset.t = '1'; }
   }
   $('mxAvisoX').addEventListener('click', function(){ try{ sessionStorage.setItem('mx_aviso_fechado', $('mxAviso').dataset.em); }catch(e){} $('mxAviso').hidden = true; });
@@ -3469,6 +3546,34 @@ nav.main-links a[href="#ferramentas"]::before{content:'🛠️';}
     var m = eu(); if(!m){ toast('Entre na sua conta primeiro.'); return; }
     var nv = $('pwNova').value; if(nv.length < 4){ toast('A senha nova precisa de ao menos 4 caracteres.'); return; }
     fetch('/api/trocasenha', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email:m.email, atual:$('pwAtual').value, nova:nv})}).then(function(r){ return r.json(); }).then(function(j){ toast(j.ok ? 'Senha alterada.' : 'Senha atual incorreta (ou muitas tentativas).'); if(j.ok){ $('pwAtual').value = ''; $('pwNova').value = ''; } }).catch(function(){ toast('Não consegui falar com o servidor.'); });
+  });
+
+  /* Trocar a senha de todos os usuários (somente administrador) */
+  $('pwAllSalvar').addEventListener('click', function(){
+    var m = eu(); if(!m || m.role !== 'admin'){ toast('Só o administrador pode fazer isso.'); return; }
+    var nv = $('pwAllNova').value, cf = $('pwAllConf').value;
+    if(nv.length < 4){ toast('A senha nova precisa de ao menos 4 caracteres.'); return; }
+    if(nv !== cf){ toast('As duas senhas não são iguais.'); return; }
+    var us = {}; try{ us = JSON.parse(localStorage.getItem('matrixedu_users_v2')) || {}; }catch(e){}
+    var alvo = Object.keys(us).filter(function(k){ return us[k].role !== 'admin'; });
+    if(!alvo.length){ toast('Não há outros usuários cadastrados.'); return; }
+    if(!confirm('Trocar a senha de ' + alvo.length + ' usuário(s) para a mesma senha nova? Todos vão precisar da nova senha para entrar.')) return;
+    var tk = ''; try{ tk = (JSON.parse(localStorage.getItem(SESS)) || {}).token || ''; }catch(e){}
+    function limpa(){ $('pwAllNova').value = ''; $('pwAllConf').value = ''; }
+    function local(){
+      var cur = {}; try{ cur = JSON.parse(localStorage.getItem('matrixedu_users_v2')) || {}; }catch(e){}
+      var n = 0; Object.keys(cur).forEach(function(k){ if(cur[k].role !== 'admin'){ cur[k].senha = nv; n++; } });
+      localStorage.setItem('matrixedu_users_v2', JSON.stringify(cur)); return n;
+    }
+    fetch('/api/trocasenha-todos', {method:'POST', headers:{'Content-Type':'application/json', 'Authorization':'Bearer ' + tk}, body:JSON.stringify({email:m.email, nova:nv})})
+      .then(function(r){
+        if(r.status === 404 || r.status === 405){ var n = local(); limpa(); toast('Atualizei ' + n + ' usuário(s) na lista do site, mas o servidor ainda não tem a rota /api/trocasenha-todos.'); return null; }
+        return r.json().then(function(j){
+          if(j.ok){ local(); limpa(); toast('Senha de ' + (j.total != null ? j.total : alvo.length) + ' usuário(s) alterada.'); }
+          else toast('Não foi possível trocar as senhas (o servidor recusou).');
+        });
+      })
+      .catch(function(){ toast('Não consegui falar com o servidor. Nada foi alterado.'); });
   });
 
   /* Relatório de uso */
@@ -3491,7 +3596,7 @@ nav.main-links a[href="#ferramentas"]::before{content:'🛠️';}
     var base = location.origin + location.pathname, img = function(u){ return 'https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=6&data=' + encodeURIComponent(u); };
     var cards = [['Carrinho Lenovo','lenovo'],['Carrinho Positivo','positivo'],['Carrinho Tablets','tablets']].map(function(c){ return [c[0], base + '?c=' + c[1] + '#carrinhos']; });
     ['6A','6B','7A','7B','8A','8B','9A','9B','1A','1B','2A','2B','3A','3B'].forEach(function(sa){ cards.push(['Sala ' + sa, base + '?sala=' + sa + '#carrinhos']); });
-    var h = '<!DOCTYPE html><meta charset="utf-8"><title>QR codes MatrixEdu</title><style>body{font-family:sans-serif;margin:16px}h1{font-size:1.2rem}.g{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px}.c{border:2px dashed #999;border-radius:10px;padding:10px;text-align:center;break-inside:avoid}.c img{width:100%;max-width:200px}b{display:block;font-size:1.1rem}</style><h1>MatrixEdu · QR codes (aponte a câmera do celular)</h1><div class="g">' +
+    var h = '<!DOCTYPE html><meta charset="utf-8"><title>QR codes MatrixEdu</title><style>body{font-family:sans-serif;margin:16px}h1{font-size:1.2rem}.g{display:grid;grid-template-columns:repeat(3,1fr);gap:32px 28px}.c{border:2px dashed #999;border-radius:10px;padding:14px;text-align:center;break-inside:avoid}.c img{width:100%;max-width:200px}@media print{body{margin:10mm}.g{gap:12mm 10mm}}b{display:block;font-size:1.1rem}</style><h1>MatrixEdu · QR codes (aponte a câmera do celular)</h1><div class="g">' +
       cards.map(function(c){ return '<div class="c"><b>' + c[0] + '</b><img src="' + img(c[1]) + '" alt="QR ' + c[0] + '"></div>'; }).join('') + '</div><p><button onclick="print()">Imprimir</button></p>';
     var w = window.open('', '_blank'); if(!w){ toast('Permita pop-ups para abrir a folha.'); return; } w.document.write(h); w.document.close();
   });
