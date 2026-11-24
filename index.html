@@ -3596,6 +3596,19 @@ html{overflow-anchor:none; scrollbar-gutter:stable;}
     var q = new URLSearchParams(location.search), c = q.get('c'), sa = q.get('sala');
     if(c && $('fCarrinho')) $('fCarrinho').value = c;
     if(sa && $('fTurno') && $('fSala')){ $('fTurno').value = /^[123]/.test(sa) ? 'tarde' : 'manha'; $('fTurno').dispatchEvent(new Event('change')); $('fSala').value = sa; if($('fSala').value !== sa){ var o = Array.prototype.find.call($('fSala').options, function(x){ return x.text.indexOf(sa) >= 0; }); if(o) $('fSala').value = o.value; } }
+    /* ao abrir pelo QR, leva direto ao formulário e destaca o carrinho/sala já selecionados */
+    if(c || sa){
+      var feito = false;
+      var destaca = function(el){ if(!el) return; el.style.transition = 'box-shadow .3s'; el.style.boxShadow = '0 0 0 3px var(--amber)'; setTimeout(function(){ el.style.boxShadow = ''; }, 3000); };
+      var vai = function(){
+        if(feito) return; feito = true;
+        var f = $('checkoutForm'); if(!f) return;
+        var hdr = document.querySelector('header.site'), off = (window.innerWidth <= 900 && hdr) ? hdr.offsetHeight + 10 : 14;
+        window.scrollTo({top: Math.max(0, f.getBoundingClientRect().top + window.pageYOffset - off), behavior: 'smooth'});
+        destaca($('fCarrinho')); destaca($('fSala'));
+      };
+      if(document.readyState === 'complete') setTimeout(vai, 500); else window.addEventListener('load', function(){ setTimeout(vai, 500); });
+    }
   })();
 
   /* 4) Lista de disciplinas + copiar dia */
